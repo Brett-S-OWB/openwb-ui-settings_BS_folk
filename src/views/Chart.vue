@@ -60,6 +60,12 @@
                 @click="handleChartClick"
               />
             </div>
+            <StandardLegend
+              v-if="chartInstance"
+              :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
+              :chart="getChartInstance()"
+              :datasets="chartDatasets.datasets"
+            />
           </openwb-base-card>
           <openwb-base-card
             title="Summen"
@@ -156,10 +162,12 @@ Chart.register(
   Filler,
   ZoomPlugin,
 );
+import StandardLegend from "../components/chart/StandardLegend.vue";
+import { nextTick } from "vue";
 
 export default {
   name: "OpenwbChartView",
-  components: { ChartjsLine, FontAwesomeIcon },
+  components: { ChartjsLine, FontAwesomeIcon, StandardLegend },
   mixins: [ComponentState],
   props: {
     initialChartRange: {
@@ -182,6 +190,7 @@ export default {
   emits: ["sendCommand"],
   data() {
     return {
+      chartInstance: null,
       mqttTopicsToSubscribe: [
         "openWB/general/extern",
         "openWB/log/daily/#",
@@ -1127,10 +1136,23 @@ export default {
       immediate: true,
     },
   },
+  updated() {
+    this.$nextTick(() => {
+      if (!this.chartInstance && this.$refs.myChart?.chart) {
+        this.chartInstance = this.$refs.myChart.chart;
+      }
+    });
+  },
   mounted() {
     this.init();
+    nextTick(() => {
+      this.chartInstance = this.$refs.myChart?.chart;
+    });
   },
   methods: {
+    getChartInstance() {
+      return this.$refs.myChart ? this.$refs.myChart.chart : null;
+    },
     handleChartClick(event) {
       if (this.chartRange == "day") {
         // no click actions for daily charts
