@@ -41,10 +41,6 @@ export default {
       type: Object,
       default: () => null,
     },
-    datasets: {
-      type: Array,
-      default: () => [],
-    },
   },
   data() {
     return {
@@ -53,16 +49,19 @@ export default {
   },
   computed: {
     legendItems() {
-      // Force reactivity based on legendVersion
-      this.legendVersion;
-
-      return this.datasets.map((dataset, index) => {
-        const meta = this.chart?.getDatasetMeta?.(index);
+      this.legendVersion; // um Reaktivität zu erzwingen
+      if (!this.chart || !this.chart.data || !Array.isArray(this.chart.data.datasets)) {
+        return [];
+      }
+      // Immer direkt aus chart.data.datasets lesen
+      const data = this.chart.data.datasets;
+      console.log("Initial datasets:", data);
+      return this.chart.data.datasets.map((dataset) => {
         return {
           label: dataset.label,
           borderColor: dataset.borderColor,
           borderDash: dataset.borderDash,
-          hidden: meta?.hidden ?? false,
+          hidden: dataset.hidden || false,
         };
       });
     },
@@ -71,12 +70,9 @@ export default {
     toggleDataset(index) {
       const chart = this.chart;
       if (!chart) return;
-
-      const meta = chart.getDatasetMeta(index);
-      meta.hidden = !meta.hidden;
+      const dataset = chart.data.datasets[index];
+      dataset.hidden = !dataset.hidden;
       chart.update();
-
-      // Trigger recomputation of legendItems
       this.legendVersion++;
     },
   },

@@ -64,7 +64,11 @@
               v-if="chartInstance"
               :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
               :chart="getChartInstance()"
-              :datasets="chartDatasets.datasets"
+            />
+            <CategoryLegend
+              v-if="chartInstance"
+              :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
+              :chart="getChartInstance()"
             />
           </openwb-base-card>
           <openwb-base-card
@@ -163,11 +167,12 @@ Chart.register(
   ZoomPlugin,
 );
 import StandardLegend from "../components/chart/StandardLegend.vue";
+import CategoryLegend from "../components/chart/CategoryLegend.vue";
 import { nextTick } from "vue";
 
 export default {
   name: "OpenwbChartView",
-  components: { ChartjsLine, FontAwesomeIcon, StandardLegend },
+  components: { ChartjsLine, FontAwesomeIcon, StandardLegend, CategoryLegend },
   mixins: [ComponentState],
   props: {
     initialChartRange: {
@@ -212,6 +217,7 @@ export default {
       datasetTemplates: {
         "counter-power_average": {
           label: "Zähler",
+          category: "component",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(255, 0, 0, 0.7)",
@@ -232,6 +238,7 @@ export default {
         },
         "counter-energy_imported": {
           label: "Zähler",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(255, 0, 0, 0.7)",
@@ -252,6 +259,7 @@ export default {
         },
         "counter-energy_exported": {
           label: "Zähler",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(0, 255, 105, 0.7)",
@@ -272,6 +280,7 @@ export default {
         },
         "counter-energy_imported_grid": {
           label: "Zähler (Netzanteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -294,6 +303,7 @@ export default {
         },
         "counter-energy_imported_pv": {
           label: "Zähler (PV-Anteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -316,6 +326,7 @@ export default {
         },
         "counter-energy_imported_bat": {
           label: "Zähler (PV-Anteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -338,6 +349,7 @@ export default {
         },
         "pv-power_exported": {
           label: "PV",
+          category: "component",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(40, 167, 69, 0.7)",
@@ -359,6 +371,7 @@ export default {
         },
         "pv-energy_exported": {
           label: "PV",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(40, 167, 69, 0.7)",
@@ -380,6 +393,7 @@ export default {
         },
         "bat-power_average": {
           label: "Speicher",
+          category: "component",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(253, 126, 20, 0.7)",
@@ -401,6 +415,7 @@ export default {
         },
         "bat-energy_imported": {
           label: "Speicher",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(253, 126, 20, 0.7)",
@@ -422,6 +437,7 @@ export default {
         },
         "bat-energy_exported": {
           label: "Speicher",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(253, 126, 20, 0.7)",
@@ -443,6 +459,7 @@ export default {
         },
         "bat-soc": {
           label: "Speicher SoC",
+          category: "component",
           unit: "%",
           jsonKey: null,
           borderColor: "rgba(253, 126, 20, 0.7)",
@@ -464,6 +481,7 @@ export default {
         },
         "cp-power_average": {
           label: "Ladepunkt",
+          category: "chargepoint",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(0, 0, 255, 0.7)",
@@ -485,6 +503,7 @@ export default {
         },
         "cp-energy_imported": {
           label: "Ladepunkt",
+          category: "chargepoint",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(0, 0, 255, 0.7)",
@@ -506,6 +525,7 @@ export default {
         },
         "cp-energy_imported_grid": {
           label: "Ladepunkt (Netzanteil)",
+          category: "chargepoint",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -528,6 +548,7 @@ export default {
         },
         "cp-energy_imported_pv": {
           label: "Ladepunkt (PV-Anteil)",
+          category: "chargepoint",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -550,6 +571,7 @@ export default {
         },
         "cp-energy_imported_bat": {
           label: "Ladepunkt (PV-Anteil)",
+          category: "chargepoint",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -572,6 +594,7 @@ export default {
         },
         "ev-soc": {
           label: "Fahrzeug SoC",
+          category: "vehicle",
           unit: "%",
           jsonKey: null,
           borderColor: "rgba(0, 0, 255, 0.7)",
@@ -593,6 +616,7 @@ export default {
         },
         "sh-power_average": {
           label: "SmartHome",
+          category: "component",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(232, 62, 140, 0.7)",
@@ -613,6 +637,7 @@ export default {
         },
         "sh-energy_imported": {
           label: "SmartHome",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(232, 62, 140, 0.7)",
@@ -633,6 +658,7 @@ export default {
         },
         "sh-energy_exported": {
           label: "SmartHome",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(232, 62, 140, 0.7)",
@@ -653,6 +679,7 @@ export default {
         },
         "hc-power_imported": {
           label: "Hausverbrauch",
+          category: "component",
           unit: "kW",
           jsonKey: null,
           borderColor: "rgba(120, 122, 124, 0.7)",
@@ -673,6 +700,7 @@ export default {
         },
         "hc-energy_imported": {
           label: "Hausverbrauch",
+          category: "component",
           unit: "kWh",
           jsonKey: null,
           borderColor: "rgba(120, 122, 124, 0.7)",
@@ -693,6 +721,7 @@ export default {
         },
         "hc-energy_imported_grid": {
           label: "Hausverbrauch (Netzanteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -715,6 +744,7 @@ export default {
         },
         "hc-energy_imported_pv": {
           label: "Hausverbrauch (PV-Anteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -737,6 +767,7 @@ export default {
         },
         "hc-energy_imported_bat": {
           label: "Hausverbrauch (PV-Anteil)",
+          category: "component",
           unit: "kWh",
           type: "bar",
           jsonKey: null,
@@ -1138,7 +1169,8 @@ export default {
   },
   updated() {
     this.$nextTick(() => {
-      if (!this.chartInstance && this.$refs.myChart?.chart) {
+      // Immer aktualisieren, nicht nur wenn chartInstance noch nicht gesetzt ist
+      if (this.$refs.myChart?.chart) {
         this.chartInstance = this.$refs.myChart.chart;
       }
     });
@@ -1573,6 +1605,7 @@ export default {
         newDataset.parsing.yAxisKey = datasetKey;
         newDataset.jsonKey = datasetKey;
         newDataset.data = this.chartDataObject;
+        newDataset.category = this.datasetTemplates[datasetTemplate].category;
         // build dataset label
         newDataset.label = this.getDatasetLabel(baseObject, objectKey, elementKey, datasetKey);
         if (newDataset.labelSuffix != undefined) {
