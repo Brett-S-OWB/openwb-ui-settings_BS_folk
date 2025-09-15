@@ -1,63 +1,30 @@
 <template>
   <div class="dropdown">
     <button
+      id="dropdownMenuButton1"
       class="btn btn-secondary dropdown-toggle"
       type="button"
-      data-bs-toggle="dropdown"
+      data-toggle="dropdown"
       aria-expanded="false"
-      id="dropdownMenuButton1"
     >
       Ladepunkte
     </button>
     <ul
       class="dropdown-menu"
-      aria-labelledby="dropdownMenuButton1"
+      aria-labelledby="chargepointDropdown"
     >
       <li
-        v-for="item in categorizedLegendItems.chargepoint"
+        v-for="(item, index) in categorizedLegendItems.component"
         :key="item.label"
-        @click="toggleDataset(item.index)"
+        @click="toggleDataset(index)"
       >
-        <span :class="{ 'text-decoration-line-through': item.hidden }">{{ item.label }}</span>
-      </li>
-    </ul>
-  </div>
-  <div class="dropdown">
-    <!-- Dropdown Button -->
-    <button
-      class="btn btn-primary dropdown-toggle"
-      type="button"
-      id="dropdownMenuButton"
-      data-bs-toggle="dropdown"
-      aria-expanded="false"
-    >
-      {{ selected }}
-    </button>
-
-    <!-- Dropdown Menu -->
-    <ul
-      class="dropdown-menu"
-      aria-labelledby="dropdownMenuButton"
-    >
-      <li
-        v-for="(option, index) in options"
-        :key="index"
-      >
-        <a
-          class="dropdown-item"
-          href="#"
-          @click="selectOption(option)"
-        >
-          {{ option }}
-        </a>
+        <span :class="{ 'text-decoration-line-through': item.hidden }">{{ item.label }} {{ item.hidden }}</span>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import * as bootstrap from "bootstrap";
-console.log("Bootstrap loaded:", bootstrap);
 export default {
   name: "CategoryLegend",
   props: {
@@ -69,8 +36,6 @@ export default {
   data() {
     return {
       legendVersion: 0, // used to force reactive update of legendItems
-      selected: "Choose an option",
-      options: ["Option 1", "Option 2", "Option 3"],
     };
   },
   computed: {
@@ -81,28 +46,21 @@ export default {
         battery: [],
         component: [],
       };
-      console.log("Categorizing datasets...", categories);
+      //console.log("Categorizing datasets...", categories);
       if (!this.chart || !this.chart.data || !Array.isArray(this.chart.data.datasets)) {
         return categories;
       }
       this.chart.data.datasets.forEach((dataset, index) => {
-        const cat = dataset.category || "component";
-        categories[cat].push({
+        const category = dataset.category || "component";
+        categories[category].push({
           ...dataset,
           index,
           hidden: dataset.hidden || false,
         });
       });
+      console.log("Categorizing datasets...", categories);
       return categories;
     },
-  },
-  mounted() {
-    const dropdownElement = document.getElementById("dropdownMenuButton1");
-    if (dropdownElement) {
-      this.dropdown = new bootstrap.Dropdown(dropdownElement, {
-        autoClose: true, // this is the default
-      });
-    }
   },
   methods: {
     toggleDataset(index) {
@@ -113,14 +71,11 @@ export default {
       chart.update();
       this.legendVersion++;
     },
-    selectOption(option) {
-      this.selected = option;
-    },
   },
 };
 </script>
 
-<style scoped>
+<style>
 .custom-legend {
   cursor: pointer;
   font-size: 0.875rem;

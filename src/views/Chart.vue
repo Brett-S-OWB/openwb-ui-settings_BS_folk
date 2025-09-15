@@ -70,6 +70,7 @@
               :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
               :chart="getChartInstance()"
             />
+            <Dropdown />
           </openwb-base-card>
           <openwb-base-card
             title="Summen"
@@ -169,10 +170,11 @@ Chart.register(
 import StandardLegend from "../components/chart/StandardLegend.vue";
 import CategoryLegend from "../components/chart/CategoryLegend.vue";
 import { nextTick } from "vue";
+import Dropdown from "../components/chart/Dropdown.vue";
 
 export default {
   name: "OpenwbChartView",
-  components: { ChartjsLine, FontAwesomeIcon, StandardLegend, CategoryLegend },
+  components: { ChartjsLine, FontAwesomeIcon, StandardLegend, CategoryLegend, Dropdown },
   mixins: [ComponentState],
   props: {
     initialChartRange: {
