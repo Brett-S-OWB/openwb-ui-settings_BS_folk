@@ -14,11 +14,13 @@
       aria-labelledby="chargepointDropdown"
     >
       <li
-        v-for="(item, index) in categorizedLegendItems.component"
+        v-for="item in categorizedLegendItems.component"
         :key="item.label"
-        @click="toggleDataset(index)"
+        @click="toggleDataset(item.index)"
       >
-        <span :class="{ 'text-decoration-line-through': item.hidden }">{{ item.label }} {{ item.hidden }}</span>
+        <span :class="{ 'text-decoration-line-through': chart.data.datasets[item.index].hidden }"
+          >{{ item.label }}
+        </span>
       </li>
     </ul>
   </div>
@@ -40,6 +42,7 @@ export default {
   },
   computed: {
     categorizedLegendItems() {
+      this.legendVersion;
       const categories = {
         chargepoint: [],
         vehicle: [],
@@ -53,9 +56,8 @@ export default {
       this.chart.data.datasets.forEach((dataset, index) => {
         const category = dataset.category || "component";
         categories[category].push({
-          ...dataset,
+          label: dataset.label,
           index,
-          hidden: dataset.hidden || false,
         });
       });
       console.log("Categorizing datasets...", categories);
@@ -69,6 +71,8 @@ export default {
       const dataset = chart.data.datasets[index];
       dataset.hidden = !dataset.hidden;
       chart.update();
+      const datasetnow = chart.data.datasets;
+      console.log("Toggling dataset...", index, dataset, datasetnow);
       this.legendVersion++;
     },
   },
