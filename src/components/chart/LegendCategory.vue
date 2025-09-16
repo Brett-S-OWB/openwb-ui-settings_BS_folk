@@ -55,6 +55,10 @@ export default {
   emits: ["toggle"],
   mounted() {
     //console.log(`LegendCategory cat------ "${this.label}" mounted with items:`, this.items);
+    // Initialise bootstrap Dropdown after Render
+    if (window.$) {
+      window.$(this.$el).find(".dropdown-toggle").dropdown();
+    }
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-wrap">
+  <div class="d-flex flex-wrap justify-content-center">
     <LegendCategory
       v-for="(items, category) in categorizedItems"
       :key="category"
