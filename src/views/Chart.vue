@@ -60,17 +60,11 @@
                 @click="handleChartClick"
               />
             </div>
-            <StandardLegend
+            <ChartLegend
               v-if="chartInstance"
               :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
               :chart="getChartInstance()"
             />
-            <CategoryLegend
-              v-if="chartInstance"
-              :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
-              :chart="getChartInstance()"
-            />
-            <Dropdown />
           </openwb-base-card>
           <openwb-base-card
             title="Summen"
@@ -167,14 +161,12 @@ Chart.register(
   Filler,
   ZoomPlugin,
 );
-import StandardLegend from "../components/chart/StandardLegend.vue";
-import CategoryLegend from "../components/chart/CategoryLegend.vue";
+import ChartLegend from "../components/chart/ChartLegend.vue";
 import { nextTick } from "vue";
-import Dropdown from "../components/chart/Dropdown.vue";
 
 export default {
   name: "OpenwbChartView",
-  components: { ChartjsLine, FontAwesomeIcon, StandardLegend, CategoryLegend, Dropdown },
+  components: { ChartjsLine, FontAwesomeIcon, ChartLegend },
   mixins: [ComponentState],
   props: {
     initialChartRange: {
@@ -803,7 +795,7 @@ export default {
             },
           },
           legend: {
-            display: true,
+            display: false,
           },
           zoom: {
             // Container for pan options
