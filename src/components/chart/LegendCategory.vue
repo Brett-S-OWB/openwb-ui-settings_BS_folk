@@ -13,6 +13,7 @@
         v-for="item in items"
         :key="item.label"
         class="dropdown-item"
+        :class="{ 'legend-item-hidden': item.hidden }"
         @click="$emit('toggle', item.index)"
       >
         <svg
@@ -53,7 +54,7 @@ export default {
   },
   emits: ["toggle"],
   mounted() {
-    console.log(`LegendCategory cat------ "${this.label}" mounted with items:`, this.items);
+    //console.log(`LegendCategory cat------ "${this.label}" mounted with items:`, this.items);
   },
 };
 </script>
@@ -61,5 +62,8 @@ export default {
 <style scoped>
 .text-decoration-line-through {
   text-decoration: line-through;
+}
+.legend-item-hidden {
+  opacity: 0.5;
 }
 </style>

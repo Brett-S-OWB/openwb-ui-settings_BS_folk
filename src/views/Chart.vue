@@ -63,6 +63,7 @@
             <ChartLegend
               v-if="chartInstance"
               :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
+              :range="chartRange"
               :chart="getChartInstance()"
             />
           </openwb-base-card>
@@ -1149,8 +1150,9 @@ export default {
     },
   },
   watch: {
-    chartRange() {
+    chartRange(newVal) {
       this.init();
+      console.log("chartRange changed to", newVal);
     },
     chartDataRead: {
       handler(newValue) {

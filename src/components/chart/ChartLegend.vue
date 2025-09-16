@@ -1,4 +1,3 @@
-<!-- eslint-disable no-debugger -->
 <template>
   <StandardLegend
     v-if="showStandardLegend"
@@ -24,6 +23,10 @@ export default {
       type: Object,
       default: () => null,
     },
+    range: {
+      type: String,
+      default: "day",
+    },
   },
   data() {
     return {
@@ -34,7 +37,7 @@ export default {
   computed: {
     legendItems() {
       this.legendVersion; // Reaktivität erzwingen!
-      console.log("Chart or datasets not ready standard", this.chart);
+      //console.log("Chart or datasets not ready standard", this.chart);
       if (!this.chart || !this.chart.data || !Array.isArray(this.chart.data.datasets)) {
         return [];
       }
@@ -49,13 +52,13 @@ export default {
       }));
       // // eslint-disable-next-line no-debugger
       // debugger;
-      console.log("Legend items:", LegendItems);
+      //console.log("Legend items:", LegendItems);
       return LegendItems;
     },
     categorizedLegendItems() {
       this.legendVersion;
       if (!this.chart) {
-        console.log("Chart or datasets not ready", this.chart);
+        //console.log("Chart or datasets not ready", this.chart);
         return { chargepoint: [], vehicle: [], component: [] };
       }
       const categories = { chargepoint: [], vehicle: [], component: [] };
@@ -73,35 +76,14 @@ export default {
           // weitere Felder nach Bedarf
         });
       });
-      console.log("Categorized legend items:", categories);
+      //console.log("Categorized legend items:", categories);
       return categories;
     },
     showStandardLegend() {
       // Beispiel: Standard-Legende bei weniger als 20 Items
-      return this.legendItems.length < 10;
+      return this.legendItems.length < 9 || this.range === "month" || this.range === "year";
     },
   },
-  // watch: {
-  //   chart: {
-  //     handler(newChart) {
-  //       if (newChart && newChart.data && Array.isArray(newChart.data.datasets)) {
-  //         this.$nextTick(() => {
-  //           this.legendVersion++;
-  //         });
-  //       }
-  //     },
-  //     immediate: true,
-  //     deep: true,
-  //   },
-  //   "chart.data.datasets": {
-  //     handler() {
-  //       this.$nextTick(() => {
-  //         this.legendVersion++;
-  //       });
-  //     },
-  //     deep: true,
-  //   },
-  // },
   methods: {
     toggleDataset(index) {
       if (!this.chart) return;
