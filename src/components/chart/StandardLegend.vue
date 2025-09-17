@@ -6,7 +6,7 @@
       class="legend-item d-flex align-items-center m-1"
       :class="{ 'legend-item-hidden': item.hidden }"
       role="button"
-      @click="$emit('toggle', item.index)"
+      @click="$emit('toggle', item.label)"
     >
       <svg
         width="20"

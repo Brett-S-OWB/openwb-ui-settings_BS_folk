@@ -1,5 +1,36 @@
 import { createStore } from "vuex";
 
+// ChartLegend-Modul for Legenden-States
+const chartLegend = {
+  namespaced: true,
+  state: () => ({
+    hiddenDatasets: [], // Array of Strings (Labels)
+  }),
+  mutations: {
+    hideDataset(state, label) {
+      if (!state.hiddenDatasets.includes(label)) {
+        state.hiddenDatasets.push(label);
+      }
+    },
+    showDataset(state, label) {
+      state.hiddenDatasets = state.hiddenDatasets.filter((l) => l !== label);
+    },
+    toggleDataset(state, label) {
+      if (state.hiddenDatasets.includes(label)) {
+        state.hiddenDatasets = state.hiddenDatasets.filter((l) => l !== label);
+      } else {
+        state.hiddenDatasets.push(label);
+      }
+    },
+    setHiddenDatasets(state, payload) {
+      state.hiddenDatasets = payload;
+    },
+    clearHidden(state) {
+      state.hiddenDatasets = [];
+    },
+  },
+};
+
 let states = {
   mqtt: {}, // will be filled with mqtt data
   mqttSubscriptions: {}, // will be filled with mqtt subscriptions count
@@ -142,7 +173,9 @@ export default createStore({
     },
   },
   actions: {},
-  modules: {},
+  modules: {
+    chartLegend, // Modul connected
+  },
   getters: {
     usageTermsAcknowledged(state) {
       return new Promise((resolve) => {

@@ -1,6 +1,7 @@
 <template>
   <StandardLegend
     v-if="showStandardLegend"
+    :key="range + '-' + legendVersion"
     :items="legendItems"
     @toggle="toggleDataset"
   />
@@ -30,67 +31,89 @@ export default {
   },
   data() {
     return {
-      legendVersion: 0,
       standard: false,
     };
   },
   computed: {
     legendItems() {
-      this.legendVersion; // Reaktivität erzwingen!
       //console.log("Chart or datasets not ready standard", this.chart);
       if (!this.chart || !this.chart.data || !Array.isArray(this.chart.data.datasets)) {
         return [];
       }
 
-      const LegendItems = this.chart.data.datasets.map((dataset, index) => ({
+      const hidden = this.$store.state.chartLegend.hiddenDatasets;
+      return this.chart.data.datasets.map((dataset, index) => ({
         label: dataset.label,
         index,
         category: dataset.category || "component",
-        hidden: !!dataset.hidden,
+        hidden: hidden.includes(dataset.label),
         borderColor: dataset.borderColor,
         borderDash: dataset.borderDash,
       }));
-      // // eslint-disable-next-line no-debugger
-      // debugger;
-      //console.log("Legend items:", LegendItems);
-      return LegendItems;
     },
     categorizedLegendItems() {
-      this.legendVersion;
       if (!this.chart) {
-        //console.log("Chart or datasets not ready", this.chart);
         return { chargepoint: [], vehicle: [], component: [] };
       }
+      const hidden = this.$store.state.chartLegend.hiddenDatasets;
+      console.log("Categorizing legend items, hidden:", hidden);
       const categories = { chargepoint: [], vehicle: [], component: [] };
       const datasets = this.chart?.data?.datasets || [];
       datasets.forEach((dataset, index) => {
         const cat = dataset.category || "component";
-        //console.log("Dataset category:", cat, dataset);
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push({
           label: dataset.label,
           index,
-          hidden: !!dataset.hidden,
+          hidden: hidden.includes(dataset.label),
           borderColor: dataset.borderColor,
           borderDash: dataset.borderDash,
-          // weitere Felder nach Bedarf
         });
       });
-      //console.log("Categorized legend items:", categories);
       return categories;
     },
     showStandardLegend() {
-      // Beispiel: Standard-Legende bei weniger als 20 Items
-      return this.legendItems.length < 9 || this.range === "month" || this.range === "year";
+      //Standard-Legende for less than 15 Items or if range is month or year
+      return this.legendItems.length < 15 || this.range === "month" || this.range === "year";
     },
   },
+  watch: {
+    chart(newChart) {
+      if (newChart) {
+        this.applyHiddenDatasetsToChart();
+      }
+    },
+  },
+  mounted() {
+    // Initial Hidden-Status aus Store anwenden
+    this.applyHiddenDatasetsToChart();
+  },
   methods: {
-    toggleDataset(index) {
+    toggleDataset(indexOrLabel) {
       if (!this.chart) return;
-      const dataset = this.chart.data.datasets[index];
-      dataset.hidden = !dataset.hidden;
+      // Hole das Label des Datasets
+      const dataset =
+        typeof indexOrLabel === "number"
+          ? this.chart.data.datasets[indexOrLabel]
+          : this.chart.data.datasets.find((ds) => ds.label === indexOrLabel);
+
+      if (!dataset) return;
+
+      // Toggle im Store
+      this.$store.commit("chartLegend/toggleDataset", dataset.label);
+
+      // Hidden-Status aus Store anwenden
+      this.applyHiddenDatasetsToChart();
+
+      //this.legendVersion++; // erzwingt Neuberechnung
+    },
+    applyHiddenDatasetsToChart() {
+      if (!this.chart || !this.chart.data) return;
+      const hidden = this.$store.state.chartLegend.hiddenDatasets;
+      this.chart.data.datasets.forEach((ds) => {
+        ds.hidden = hidden.includes(ds.label);
+      });
       this.chart.update();
-      this.legendVersion++; // erzwingt Neuberechnung
     },
   },
 };

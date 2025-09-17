@@ -14,7 +14,7 @@
         :key="item.label"
         class="dropdown-item"
         :class="{ 'legend-item-hidden': item.hidden }"
-        @click="$emit('toggle', item.index)"
+        @click="$emit('toggle', item.label)"
       >
         <svg
           width="20"
