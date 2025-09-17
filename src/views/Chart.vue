@@ -51,6 +51,7 @@
             title="Diagramm"
             :collapsible="true"
             :collapsed="false"
+            @expanded="refreshLegend"
           >
             <div class="openwb-chart">
               <chartjs-line
@@ -63,6 +64,7 @@
             <ChartLegend
               v-if="chartInstance"
               :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
+              ref="chartLegend"
               :range="chartRange"
               :chart="getChartInstance()"
             />
@@ -796,7 +798,7 @@ export default {
             },
           },
           legend: {
-            display: false,
+            display: true,
           },
           zoom: {
             // Container for pan options
@@ -1165,7 +1167,6 @@ export default {
   },
   updated() {
     this.$nextTick(() => {
-      // Immer aktualisieren, nicht nur wenn chartInstance noch nicht gesetzt ist
       if (this.$refs.myChart?.chart) {
         this.chartInstance = this.$refs.myChart.chart;
       }
@@ -1180,6 +1181,14 @@ export default {
   methods: {
     getChartInstance() {
       return this.$refs.myChart ? this.$refs.myChart.chart : null;
+    },
+    refreshLegend() {
+      this.$nextTick(() => {
+        this.chartInstance = this.$refs.myChart?.chart;
+        if (this.$refs.chartLegend && this.chartInstance) {
+          this.$refs.chartLegend.legendVersion++;
+        }
+      });
     },
     handleChartClick(event) {
       if (this.chartRange == "day") {
