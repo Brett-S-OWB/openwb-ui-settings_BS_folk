@@ -63,7 +63,7 @@
             </div>
             <ChartLegend
               v-if="chartInstance"
-              :key="chartDatasets.datasets.length + '-' + chartRange + '-' + chartDate"
+              :key="chartDatasets.datasets.length"
               ref="chartLegend"
               :range="chartRange"
               :chart="getChartInstance()"
@@ -798,7 +798,7 @@ export default {
             },
           },
           legend: {
-            display: true,
+            display: false,
           },
           zoom: {
             // Container for pan options

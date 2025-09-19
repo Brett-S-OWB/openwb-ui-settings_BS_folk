@@ -40,7 +40,6 @@ export default {
       if (!this.chart || !this.chart.data || !Array.isArray(this.chart.data.datasets)) {
         return [];
       }
-
       const hidden = this.$store.state.chartLegend.hiddenDatasets;
       return this.chart.data.datasets.map((dataset, index) => ({
         label: dataset.label,
@@ -55,14 +54,19 @@ export default {
       if (!this.chart) {
         return { chargepoint: [], vehicle: [], component: [] };
       }
+      let categories = {};
       const hidden = this.$store.state.chartLegend.hiddenDatasets;
       console.log("Categorizing legend items, hidden:", hidden);
-      const categories = { chargepoint: [], vehicle: [], component: [] };
+      if (this.range === "day") {
+        categories = { chargepoint: [], vehicle: [], component: [] };
+      } else {
+        categories = { chargepoint: [], component: [] };
+      }
       const datasets = this.chart?.data?.datasets || [];
       datasets.forEach((dataset, index) => {
-        const cat = dataset.category || "component";
-        if (!categories[cat]) categories[cat] = [];
-        categories[cat].push({
+        const category = dataset.category || "component";
+        if (!categories[category]) categories[category] = [];
+        categories[category].push({
           label: dataset.label,
           index,
           hidden: hidden.includes(dataset.label),
@@ -73,20 +77,39 @@ export default {
       return categories;
     },
     showStandardLegend() {
-      //Standard-Legende for less than 15 Items or if range is month or year
-      return this.legendItems.length < 15 || this.range === "month" || this.range === "year";
+      //Standard-Legende for less than 20 Items or if range is month or year
+      return this.legendItems.length < 15;
+      //|| this.range === "month" || this.range === "year";
     },
   },
   watch: {
     chart(newChart) {
-      if (newChart) {
+      if (newChart && newChart.data && Array.isArray(newChart.data.datasets)) {
+        // apply the Default-Hidden datasets when changing the time range
+        const defaultHidden = newChart.data.datasets
+          .filter((dataset) => dataset.hidden)
+          .map((dataset) => dataset.label);
+        this.$store.commit("chartLegend/setHiddenDatasets", defaultHidden);
         this.applyHiddenDatasetsToChart();
       }
     },
   },
   mounted() {
-    // Initial Hidden-Status aus Store anwenden
-    this.applyHiddenDatasetsToChart();
+    console.log("ChartLegend mounted, chart:", this.chart);
+    const waitForChart = () => {
+      if (this.chart && this.chart.data && Array.isArray(this.chart.data.datasets)) {
+        const defaultHidden = this.chart.data.datasets
+          .filter((dataset) => dataset.hidden)
+          .map((dataset) => dataset.label);
+        if (defaultHidden.length) {
+          this.$store.commit("chartLegend/setHiddenDatasets", defaultHidden);
+        }
+        this.applyHiddenDatasetsToChart();
+      } else {
+        setTimeout(waitForChart, 50);
+      }
+    };
+    waitForChart();
   },
   methods: {
     toggleDataset(indexOrLabel) {
