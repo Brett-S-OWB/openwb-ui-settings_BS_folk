@@ -1,5 +1,5 @@
 <template>
-  <div class="chargeLog">
+  <div :class="containerClass">
     <div v-if="$store.state.mqtt['openWB/general/extern'] === true">
       <openwb-base-alert subtype="info">
         Das Ladeprotokoll ist nicht verfügbar, solange sich diese openWB im Steuerungsmodus "secondary" befindet. Du
@@ -321,6 +321,7 @@ export default {
   emits: ["sendCommand"],
   data() {
     return {
+      windowWidth: window.innerWidth,
       dateTimeFormat: new Intl.DateTimeFormat(undefined, {
         year: "numeric",
         month: "2-digit",
@@ -485,6 +486,9 @@ export default {
     };
   },
   computed: {
+    containerClass() {
+      return this.windowWidth < 1500 ? "container" : "center-container";
+    },
     mqttClientId() {
       return this.$root.mqttClientId;
     },
@@ -708,8 +712,15 @@ export default {
     const today = new Date();
     this.currentMonth = this.chargeLogDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
     this.requestChargeLog();
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleResize);
   },
   methods: {
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+    },
     cleanRequestData() {
       if ("id" in this.chargeLogRequestData.filter.chargepoint) {
         this.chargeLogRequestData.filter.chargepoint.id = this.chargeLogRequestData.filter.chargepoint.id.filter(
@@ -834,10 +845,18 @@ export default {
   white-space: nowrap;
 }
 
-.charge-log-table,
-.charge-log-totals {
-  border: none;
-  padding: 0;
+.container {
+  padding: 60px 15px 30px;
+}
+
+.center-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
 }
 
 .charge-log-table :deep(.card-body),

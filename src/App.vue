@@ -4,7 +4,7 @@
   </header>
   <div
     role="main"
-    class="container"
+    :class="$route.name === 'ChargeLog' ? 'container-wide' : 'container'"
   >
     <div id="content">
       <h1>{{ $route.meta.heading }}</h1>
@@ -322,5 +322,12 @@ export default {
 
 .bg-pink {
   background-color: var(--pink) !important;
+}
+
+.container-wide {
+  max-width: 100vw;
+  width: 100vw;
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>
