@@ -845,10 +845,6 @@ export default {
   white-space: nowrap;
 }
 
-.container {
-  padding: 60px 15px 30px;
-}
-
 .center-container {
   width: 100%;
   max-width: 100%;

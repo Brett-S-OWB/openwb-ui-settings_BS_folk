@@ -288,7 +288,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.container[role="main"] {
+.container[role="main"],
+.container-wide[role="main"] {
   padding: 60px 15px 30px;
 }
 
