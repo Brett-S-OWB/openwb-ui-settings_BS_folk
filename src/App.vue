@@ -4,12 +4,9 @@
   </header>
   <div
     role="main"
-    :class="$route.name === 'ChargeLog' ? 'container-wide' : 'container'"
+    :class="mainContainerClass"
   >
-    <div
-      id="content"
-      :class="{ 'center-container': $route.name === 'ChargeLog' }"
-    >
+    <div id="content">
       <h1>{{ $route.meta.heading }}</h1>
       <router-view
         @save="saveValues"
@@ -41,6 +38,7 @@ export default {
   },
   data() {
     return {
+      windowWidth: window.innerWidth,
       client: {
         connected: false,
       },
@@ -55,6 +53,12 @@ export default {
     };
   },
   computed: {
+    mainContainerClass() {
+      if (this.$route.name === "ChargeLog") {
+        return this.windowWidth < 1500 ? "container" : "container-wide";
+      }
+      return "container";
+    },
     /**
      * @return {Str} - Mqtt client id of our connection
      */
@@ -76,7 +80,16 @@ export default {
   created() {
     this.createConnection();
   },
+  mounted() {
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleResize);
+  },
   methods: {
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+    },
     /**
      * Send topics to broker
      * @param {Array} topicsToSave - The topics to save
@@ -296,9 +309,11 @@ export default {
   padding: 60px 15px 30px;
 }
 
-.center-container {
-  width: 100%;
-  max-width: 100%;
+.container-wide {
+  max-width: 100vw;
+  width: 100vw;
+  padding-left: 0;
+  padding-right: 0;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -336,48 +351,5 @@ export default {
 
 .bg-pink {
   background-color: var(--pink) !important;
-}
-
-.container-wide {
-  max-width: 100vw;
-  width: 100vw;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-@media (max-width: 1500px) {
-  .center-container {
-    width: 1400px;
-    max-width: none;
-    display: block;
-    flex-direction: unset;
-    flex-wrap: unset;
-    align-content: unset;
-    overflow-x: unset;
-    /* Bootstrap-Padding */
-    padding-left: var(--bs-gutter-x, 1.5rem);
-    padding-right: var(--bs-gutter-x, 1.5rem);
-  }
-}
-
-@media (max-width: 1200px) {
-  .center-container {
-    width: 1150px;
-    max-width: none;
-    display: block;
-    flex-direction: unset;
-    flex-wrap: unset;
-    align-content: unset;
-    overflow-x: unset;
-    /* Bootstrap-Padding */
-    padding-left: var(--bs-gutter-x, 1.5rem);
-    padding-right: var(--bs-gutter-x, 1.5rem);
-  }
-}
-
-@media (max-width: 800px) {
-  .center-container {
-    width: 700px;
-  }
 }
 </style>

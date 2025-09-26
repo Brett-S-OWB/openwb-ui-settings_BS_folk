@@ -825,7 +825,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .hide {
   display: none;
 }
@@ -834,24 +834,13 @@ export default {
   white-space: nowrap;
 }
 
-/* .center-container {
+.charge-log-table,
+.charge-log-totals {
+  border: none;
+  padding: 0;
   width: 100%;
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-content: center;
-} */
-
-/* :deep(#content) {
-  background: rgb(38, 0, 255) !important;
-  color: red !important;
-} */
-
-/* #content {
-  background: yellow !important;
-} */
+  overflow-x: auto;
+}
 
 .charge-log-table :deep(.card-body),
 .charge-log-totals :deep(.card-body) {
