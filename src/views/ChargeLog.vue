@@ -1,5 +1,5 @@
 <template>
-  <div :class="containerClass">
+  <div>
     <div v-if="$store.state.mqtt['openWB/general/extern'] === true">
       <openwb-base-alert subtype="info">
         Das Ladeprotokoll ist nicht verfügbar, solange sich diese openWB im Steuerungsmodus "secondary" befindet. Du
@@ -321,7 +321,6 @@ export default {
   emits: ["sendCommand"],
   data() {
     return {
-      windowWidth: window.innerWidth,
       dateTimeFormat: new Intl.DateTimeFormat(undefined, {
         year: "numeric",
         month: "2-digit",
@@ -486,9 +485,6 @@ export default {
     };
   },
   computed: {
-    containerClass() {
-      return this.windowWidth < 1500 ? "container" : "center-container";
-    },
     mqttClientId() {
       return this.$root.mqttClientId;
     },
@@ -712,15 +708,8 @@ export default {
     const today = new Date();
     this.currentMonth = this.chargeLogDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
     this.requestChargeLog();
-    window.addEventListener("resize", this.handleResize);
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.handleResize);
   },
   methods: {
-    handleResize() {
-      this.windowWidth = window.innerWidth;
-    },
     cleanRequestData() {
       if ("id" in this.chargeLogRequestData.filter.chargepoint) {
         this.chargeLogRequestData.filter.chargepoint.id = this.chargeLogRequestData.filter.chargepoint.id.filter(
@@ -836,7 +825,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .hide {
   display: none;
 }
@@ -845,7 +834,7 @@ export default {
   white-space: nowrap;
 }
 
-.center-container {
+/* .center-container {
   width: 100%;
   max-width: 100%;
   display: flex;
@@ -853,7 +842,16 @@ export default {
   flex-direction: column;
   flex-wrap: wrap;
   align-content: center;
-}
+} */
+
+/* :deep(#content) {
+  background: rgb(38, 0, 255) !important;
+  color: red !important;
+} */
+
+/* #content {
+  background: yellow !important;
+} */
 
 .charge-log-table :deep(.card-body),
 .charge-log-totals :deep(.card-body) {

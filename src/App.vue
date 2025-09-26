@@ -6,7 +6,10 @@
     role="main"
     :class="$route.name === 'ChargeLog' ? 'container-wide' : 'container'"
   >
-    <div id="content">
+    <div
+      id="content"
+      :class="{ 'center-container': $route.name === 'ChargeLog' }"
+    >
       <h1>{{ $route.meta.heading }}</h1>
       <router-view
         @save="saveValues"
@@ -293,6 +296,16 @@ export default {
   padding: 60px 15px 30px;
 }
 
+.center-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
 .clickable {
   cursor: pointer;
 }
@@ -330,5 +343,41 @@ export default {
   width: 100vw;
   padding-left: 0;
   padding-right: 0;
+}
+
+@media (max-width: 1500px) {
+  .center-container {
+    width: 1400px;
+    max-width: none;
+    display: block;
+    flex-direction: unset;
+    flex-wrap: unset;
+    align-content: unset;
+    overflow-x: unset;
+    /* Bootstrap-Padding */
+    padding-left: var(--bs-gutter-x, 1.5rem);
+    padding-right: var(--bs-gutter-x, 1.5rem);
+  }
+}
+
+@media (max-width: 1200px) {
+  .center-container {
+    width: 1150px;
+    max-width: none;
+    display: block;
+    flex-direction: unset;
+    flex-wrap: unset;
+    align-content: unset;
+    overflow-x: unset;
+    /* Bootstrap-Padding */
+    padding-left: var(--bs-gutter-x, 1.5rem);
+    padding-right: var(--bs-gutter-x, 1.5rem);
+  }
+}
+
+@media (max-width: 800px) {
+  .center-container {
+    width: 700px;
+  }
 }
 </style>
