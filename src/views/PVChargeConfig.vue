@@ -196,7 +196,7 @@
         <div v-else>
           <openwb-base-button-group-input
             v-model="batMode"
-            title="Laden mit Überschuss"
+            title="Überschuss primär für"
             :buttons="[{ buttonValue: 'ev_mode' }, { buttonValue: 'bat_mode' }, { buttonValue: 'min_soc_bat_mode' }]"
           >
             <template #label-ev_mode>
