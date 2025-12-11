@@ -17,6 +17,7 @@
               { buttonValue: 'balanced', text: 'Ausgewogen' },
               { buttonValue: 'individual', text: 'Individuell' },
             ]"
+            :max-per-row="2"
           >
             <template #help>
               Die Ladeleistung kann nicht mit absoluter Genauigkeit eingestellt werden, sodass am EVU-Punkt nicht auf
@@ -335,3 +336,27 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/*
+  Scoped styles — Only apply inside THIS component.
+  Use :deep() to reach Bootstrap classes inside the slot structure.
+*/
+.controlmode-container {
+  margin-bottom: 1rem;
+}
+
+/* Remove spacing between the two button-groups */
+:deep(.controlmode-container .form-row),
+:deep(.controlmode-container .col-form-label) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: calc(0rem - 0.01rem) !important;
+  margin-bottom: 0 !important;
+}
+
+/* Remove extra bottom spacing OpenWB injects between elements */
+:deep(.controlmode-container .openwb-base-setting-element) {
+  margin-bottom: 0 !important;
+}
+</style>
