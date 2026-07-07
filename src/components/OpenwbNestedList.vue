@@ -18,13 +18,6 @@
               class="handle"
               :icon="['fas', nesting ? 'arrows-alt' : 'arrows-up-down']"
             />
-            <div class="element-label">
-              <font-awesome-icon
-                v-if="getElementIcon(element)"
-                :icon="getElementIcon(element)"
-              />
-              {{ getElementLabel(element.id) }}
-            </div>
             <font-awesome-icon
               v-if="getElementIcon(element)"
               :icon="getElementIcon(element)"
