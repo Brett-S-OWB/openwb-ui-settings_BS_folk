@@ -3,7 +3,7 @@
     <openwb-base-alert subtype="info">
       Beschreibung der Konfiguration und weitere Hinweise im Wiki:
       <a
-        href="https://github.com/openWB/core/wiki/SoC-VWId"
+        :href="`https://wiki.openwb.de/doku.php?id=openwb:vc:${systemVersion}:software:fahrzeug-infos:vw`"
         target="_blank"
         rel="noopener noreferrer"
         >Wiki für SoC-Modul VWId</a
@@ -63,9 +63,10 @@
 
 <script>
 import VehicleConfigMixin from "../VehicleConfigMixin.vue";
+import SystemVersion from "../../mixins/SystemVersion.vue";
 
 export default {
   name: "VehicleSocVwid",
-  mixins: [VehicleConfigMixin],
+  mixins: [VehicleConfigMixin, SystemVersion],
 };
 </script>
