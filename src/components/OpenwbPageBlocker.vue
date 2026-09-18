@@ -9,7 +9,16 @@
       @modal-result="handleModalResult($event)"
     >
       <p v-if="bootInProgress">Der Systemstart ist noch nicht abgeschlossen.</p>
-      <p v-else-if="updateInProgress">Es wird eine Systemaktualisierung ausgeführt.</p>
+      <template v-else-if="updateInProgress">
+        <p>Es wird eine Systemaktualisierung ausgeführt.</p>
+        <template v-if="longUpdateExpected">
+          <p><strong>Dieses Update kann bis zu 45 Minuten dauern.</strong></p>
+          <p>
+            Es werden einmalig die gespeicherten Diagrammdaten umgewandelt. Bitte die openWB währenddessen unbedingt
+            eingeschaltet lassen und nicht vom Strom trennen, auch wenn längere Zeit keine Rückmeldung erscheint.
+          </p>
+        </template>
+      </template>
       <p v-else-if="mqttClientDisconnected">
         Die Verbindung zur openWB wurde unterbrochen.<br />
         Es wird versucht, die Verbindung wieder herzustellen...
@@ -31,13 +40,16 @@ export default {
       mqttTopics: [
         { topic: "openWB/system/boot_done", writeable: false },
         { topic: "openWB/system/update_in_progress", writeable: false },
+        { topic: "openWB/system/version", writeable: false },
       ],
       disconnectedTimeout: null,
     };
   },
   computed: {
     title() {
-      if (this.bootInProgress || this.updateInProgress) {
+      if (this.updateInProgress) {
+        return "Systemaktualisierung läuft";
+      } else if (this.bootInProgress) {
         return "openWB ist noch nicht bereit";
       } else if (this.mqttClientDisconnected) {
         return "Verbindung zur openWB verloren";
@@ -72,6 +84,20 @@ export default {
         return false;
       }
       return this.$store.state.mqtt["openWB/system/update_in_progress"];
+    },
+    // During an update the installed version is still the old one until the
+    // reboot completes. A version < 2.2.0 means this update pulls in the 2.2.0
+    // data migration, which can take much longer (see SystemConfiguration.vue).
+    longUpdateExpected() {
+      const version = this.$store.state.mqtt["openWB/system/version"];
+      if (typeof version !== "string") {
+        return false;
+      }
+      const [major, minor] = version.split("-")[0].split(".").map(Number);
+      if (Number.isNaN(major) || Number.isNaN(minor)) {
+        return false;
+      }
+      return major < 2 || (major === 2 && minor < 2);
     },
     reloadRequired() {
       return this.$store.state.local.reloadRequired;

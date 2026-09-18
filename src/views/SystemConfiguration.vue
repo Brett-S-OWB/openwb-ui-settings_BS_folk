@@ -140,6 +140,25 @@
               </openwb-base-click-button>
             </div>
           </div>
+          <openwb-base-modal-dialog
+            :show="showUpdateConfirm"
+            title="Update kann lange dauern"
+            subtype="warning"
+            :buttons="[
+              { text: 'Abbrechen', event: 'close', subtype: 'secondary' },
+              { text: 'Update starten', event: 'confirm', subtype: 'success' },
+            ]"
+            @modal-result="handleUpdateConfirm($event)"
+          >
+            <p>
+              Dieses Update enthält die einmalige Datenmigration aus Version 2.2.0. Dabei werden die gespeicherten
+              Diagrammdaten umgewandelt.
+            </p>
+            <p>
+              <strong>Der Vorgang kann bis zu 45 Minuten dauern.</strong> Bitte die openWB währenddessen unbedingt
+              eingeschaltet lassen und nicht vom Strom trennen, auch wenn längere Zeit keine Rückmeldung erscheint.
+            </p>
+          </openwb-base-modal-dialog>
           <div
             v-if="
               $store.state.mqtt['openWB/general/extern'] != true &&
@@ -375,6 +394,7 @@ export default {
       ],
       warningAcknowledged: false,
       selectedTag: "*HEAD*",
+      showUpdateConfirm: false,
     };
   },
   computed: {
@@ -396,6 +416,21 @@ export default {
         this.$store.state.mqtt["openWB/system/current_branch_commit"] !=
           this.$store.state.mqtt["openWB/system/current_commit"]
       );
+    },
+    // The one-time data migration introduced in 2.2.0 (conversion of the diagram
+    // data files) makes the update take much longer. It runs whenever an update
+    // pulls in the 2.2.0 changes, i.e. when the currently installed version is
+    // still below 2.2.0. Once on >= 2.2.0 later updates are fast again.
+    longUpdateExpected() {
+      const version = this.$store.state.mqtt["openWB/system/version"];
+      if (typeof version !== "string") {
+        return false;
+      }
+      const [major, minor] = version.split("-")[0].split(".").map(Number);
+      if (Number.isNaN(major) || Number.isNaN(minor)) {
+        return false;
+      }
+      return major < 2 || (major === 2 && minor < 2);
     },
     releaseChangeValid() {
       return (
@@ -563,8 +598,26 @@ export default {
       this.sendSystemCommand("systemShutdown");
     },
     systemUpdate() {
+      // Updates that pull in the 2.2.0 data migration can take up to ~45 min.
+      // Ask for an explicit confirmation in that case so the user does not
+      // interrupt the update. Fast updates start immediately as before.
+      if (this.longUpdateExpected) {
+        this.showUpdateConfirm = true;
+      } else {
+        this.performUpdate();
+      }
+    },
+    performUpdate() {
+      this.showUpdateConfirm = false;
       this.sendSystemCommand("systemUpdate", {});
       // reload hint is handled by page blocker
+    },
+    handleUpdateConfirm(event) {
+      if (event === "confirm") {
+        this.performUpdate();
+      } else {
+        this.showUpdateConfirm = false;
+      }
     },
     switchBranch() {
       this.sendSystemCommand("systemUpdate", {
